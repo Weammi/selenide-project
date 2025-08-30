@@ -1,20 +1,13 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.9.8-eclipse-temurin-21'
-            args '-v $HOME/.m2:/root/.m2 -e JAVA_HOME=/opt/java/openjdk'
-        }
-    }
+    agent any
 
     triggers {
-        cron('H */6 * * *') // Запуск каждые 6 часов
+        cron('H */6 * * *')
     }
 
     environment {
         BROWSER = 'chrome'
         SELENIDE_HEADLESS = 'true'
-        JAVA_OPTS = '--enable-preview'
-        MAVEN_OPTS = '--enable-preview'
     }
 
     stages {
@@ -27,46 +20,28 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean compile -Dmaven.compiler.fork=true'
+                sh 'mvn clean compile'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test -Dmaven.compiler.fork=true --enable-preview'
+                sh 'mvn test -Dselenide.headless=true'
             }
             post {
                 always {
                     allure includeProperties: false,
                     jdk: '',
                     results: [[path: 'target/allure-results']]
-
-                    // Сохраняем отчеты
-                    archiveArtifacts artifacts: 'target/allure-results/**/*',
-                    allowEmptyArchive: true
-                }
-            }
-        }
-
-        stage('Docker Build') {
-            steps {
-                script {
-                    docker.build("selenide-tests-jdk21:${env.BUILD_ID}")
                 }
             }
         }
 
         stage('Allure Report') {
             steps {
-                sh 'mvn allure:report'
-                publishHTML target: [
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: false,
-                    keepAll: true,
-                    reportDir: 'target/allure-report',
-                    reportFiles: 'index.html',
-                    reportName: 'Allure Report'
-                ]
+                allure includeProperties: false,
+                    jdk: '',
+                    results: [[path: 'target/allure-results']]
             }
         }
     }
@@ -74,10 +49,6 @@ pipeline {
     post {
         always {
             cleanWs()
-            script {
-                // Очистка Docker образов
-                sh 'docker system prune -f'
-            }
         }
     }
 }
