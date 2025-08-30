@@ -1,0 +1,55 @@
+# Build outputs
+target/
+build/
+out/
+bin/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+
+# Logs
+*.log
+logs/
+test-output/
+
+# Dependency directories
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.local.env
+
+# Allure reports
+allure-results/
+allure-report/
+.allure/
+
+# Selenide downloads and reports
+.downloads/
+.build/
+.reports/
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Credentials
+*.key
+*.pem
+*.crt
+config/application-*.properties
