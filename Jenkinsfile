@@ -7,7 +7,19 @@ pipeline {
     }
 
     triggers {
-        cron('H */6 * * *')
+        cron('H/5 * * * *')
+    }
+
+    stage('Checkout') {
+        steps {
+            git branch: 'master',
+            url: 'https://github.com/Weammi/selenide-project.git'
+
+            // Принудительно обновляем до последнего коммита
+            sh 'git fetch --all'
+            sh 'git reset --hard origin/master'
+            sh 'git clean -fd'  // удаляем неотслеживаемые файлы
+        }
     }
 
     environment {
