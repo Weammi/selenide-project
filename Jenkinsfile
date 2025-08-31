@@ -1,14 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.9.8-eclipse-temurin-21'
-            args '-v $HOME/.m2:/root/.m2'
-        }
-    }
-
-    triggers {
-        cron('H/5 * * * *')
-    }
+    agent any
 
     environment {
         BROWSER = 'chrome'
