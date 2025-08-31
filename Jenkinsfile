@@ -15,6 +15,24 @@ pipeline {
         SELENIDE_HEADLESS = 'true'
     }
 
+            stage('Debug Info') {
+                steps {
+                    sh '''
+                        echo "=== DEBUG INFORMATION ==="
+                        echo "Current directory: $(pwd)"
+                        echo "Files in workspace:"
+                        ls -la
+                        echo "Maven version:"
+                        mvn --version
+                        echo "Java version:"
+                        java --version
+                        echo "Git version:"
+                        git --version
+                    '''
+                }
+            }
+
+
     stages {
         stage('Setup Browser') {
             steps {
@@ -52,7 +70,11 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'mvn clean test -Dselenide.headless=true'
+                sh '''
+                    echo "=== STARTING TESTS ==="
+                    cd /var/lib/jenkins/workspace/selenide-autotest
+                    mvn clean test -Dselenide.headless=true -X
+                '''
             }
             post {
                 always {
