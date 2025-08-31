@@ -1,7 +1,37 @@
 pipeline {
     agent any
 
+    triggers {
+        cron('H */6 * * *')
+    }
+
+    environment {
+        BROWSER = 'chrome'
+        SELENIDE_HEADLESS = 'true'
+    }
+
     stages {
+        stage('Setup Browser') {
+            steps {
+                sh '''
+                    # Установка Chrome и ChromeDriver
+                    apt-get update
+                    apt-get install -y wget gnupg
+                    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+                    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+                    apt-get update
+                    apt-get install -y google-chrome-stable
+
+                    # Установка ChromeDriver
+                    CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
+                    CHROME_DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+                    wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip"
+                    unzip /tmp/chromedriver.zip -d /usr/local/bin/
+                    chmod +x /usr/local/bin/chromedriver
+                '''
+            }
+        }
+
         stage('Checkout') {
             steps {
                 git branch: 'master',
@@ -9,16 +39,15 @@ pipeline {
             }
         }
 
+        stage('Build') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+
         stage('Test') {
             steps {
-                sh '''
-                    # Установка зависимостей
-                    apt-get update
-                    apt-get install -y wget
-
-                    # Запуск тестов
-                    mvn clean test -Dselenide.headless=true -Dselenide.browser=chrome
-                '''
+                sh 'mvn test -Dselenide.headless=true'
             }
             post {
                 always {
@@ -27,6 +56,12 @@ pipeline {
                     results: [[path: 'target/allure-results']]
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }
