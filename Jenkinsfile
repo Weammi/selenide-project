@@ -20,11 +20,6 @@ pipeline {
             steps {
                 git branch: 'master',
                 url: 'https://github.com/Weammi/selenide-project.git'
-
-                // Принудительно обновляем до последнего коммита
-                sh 'git fetch --all'
-                sh 'git reset --hard origin/master'
-                sh 'git clean -fd'  // удаляем неотслеживаемые файлы
             }
         }
 
@@ -39,29 +34,6 @@ pipeline {
                     mvn --version
                     echo "Java version:"
                     java --version
-                    echo "Git version:"
-                    git --version
-                '''
-            }
-        }
-
-        stage('Setup Browser') {
-            steps {
-                sh '''
-                    # Установка Chrome и ChromeDriver
-                    apt-get update
-                    apt-get install -y wget gnupg
-                    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-                    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
-                    apt-get update
-                    apt-get install -y google-chrome-stable
-
-                    # Установка ChromeDriver
-                    CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
-                    CHROME_DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-                    wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip"
-                    unzip /tmp/chromedriver.zip -d /usr/local/bin/
-                    chmod +x /usr/local/bin/chromedriver
                 '''
             }
         }
@@ -74,7 +46,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'mvn test -Dselenide.headless=true'
+                sh 'mvn test -Dselenide.headless=true -Dselenide.browser=chrome'
             }
             post {
                 always {
