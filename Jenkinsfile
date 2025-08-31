@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'maven:3.9.8-eclipse-temurin-21'
+            args '-v $HOME/.m2:/root/.m2'
+        }
+    }
 
     triggers {
         cron('H */6 * * *')
@@ -47,7 +52,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'mvn test -Dselenide.headless=true'
+                sh 'mvn clean test -Dselenide.headless=true'
             }
             post {
                 always {
