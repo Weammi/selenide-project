@@ -20,6 +20,10 @@
         <allure.version>2.27.0</allure.version>
         <aspectj.version>1.9.22</aspectj.version>
         <surefire.version>3.2.5</surefire.version>
+
+        <selenide.headless>true</selenide.headless>
+        <selenide.browser>chrome</selenide.browser>
+        <selenide.remote>http://localhost:4444/wd/hub</selenide.remote>
     </properties>
 
     <dependencies>
