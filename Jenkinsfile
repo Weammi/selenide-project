@@ -1,8 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'justinribeiro/chrome-headless:latest'  // Готовый образ с Chrome
-            args '--shm-size=1g'  // Важно для Chrome
+            image 'selenoid/chrome:latest'  // Официальный образ Selenoid
+            args '--shm-size=1g -u root'  // Запуск от root
         }
     }
 
@@ -18,6 +18,7 @@ pipeline {
                         # Устанавливаем Maven
                         apt-get update
                         apt-get install -y maven
+                        mvn --version
                     '''
                 }
             }
