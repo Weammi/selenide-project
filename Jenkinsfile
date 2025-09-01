@@ -46,7 +46,8 @@ pipeline {
                 sh '''
                     mvn test \
                         -Dselenide.browser=chrome \
-                        -Dselenide.headless=true
+                        -Dselenide.headless=true \
+                        -Dchromeoptions.args="--headless,--disable-gpu,--no-sandbox,--disable-dev-shm-usage,--window-size=1920,1080,--remote-allow-origins=*"
                 '''
             }
             post {
