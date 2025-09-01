@@ -1,8 +1,9 @@
 pipeline {
     agent {
         docker {
-            image 'maven:3.9.8-eclipse-temurin-21'  // Maven + Java
-            args '-u root --shm-size=1g'  // Запуск от root
+            image 'selenoid/chrome:120.0'  # Стабильная версия
+            args '--shm-size=2g -u root'
+            reuseNode true
         }
     }
 
@@ -46,8 +47,7 @@ pipeline {
                 sh '''
                     mvn test \
                         -Dselenide.browser=chrome \
-                        -Dselenide.headless=true \
-                        -Dchromeoptions.args="--headless,--disable-gpu,--no-sandbox,--disable-dev-shm-usage,--window-size=1920,1080,--remote-allow-origins=*"
+                        -Dselenide.headless=true
                 '''
             }
             post {
