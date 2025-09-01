@@ -12,49 +12,6 @@ pipeline {
     }
 
     stages {
-            stage('Install Chrome') {
-                steps {
-                    sh '''
-                        set -e  # Выход при любой ошибке
-
-                        echo "=== Installing Chrome ==="
-                        apt-get update
-                        apt-get install -y wget unzip gnupg
-
-                        # Добавление репозитория Google Chrome
-                        wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
-                        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
-
-                        # Установка КОНКРЕТНОЙ версии Chrome (например, 120.x)
-                        apt-get update
-                        apt-get install -y google-chrome-stable=120.0.6099.109-1
-
-                        # Альтернативно: установка через прямой download
-                        # wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-                        # apt-get install -y ./google-chrome-stable_current_amd64.deb
-
-                        # Получение версий
-                        CHROME_VERSION=$(google-chrome-stable --version | awk '{print $3}')
-                        CHROME_MAJOR=$(echo $CHROME_VERSION | cut -d'.' -f1)
-                        echo "Chrome: $CHROME_VERSION, Major: $CHROME_MAJOR"
-
-                        # Установка ChromeDriver
-                        echo "Downloading ChromeDriver for major version $CHROME_MAJOR"
-                        wget -q -O /tmp/chromedriver_version "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR"
-                        CHROMEDRIVER_VERSION=$(cat /tmp/chromedriver_version)
-                        echo "ChromeDriver version: $CHROMEDRIVER_VERSION"
-
-                        wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-                        unzip /tmp/chromedriver.zip -d /usr/local/bin/
-                        chmod +x /usr/local/bin/chromedriver
-
-                        # Проверка
-                        echo "Installation completed:"
-                        google-chrome-stable --version
-                        chromedriver --version
-                    '''
-                }
-            }
 
         stage('Checkout') {
             steps {
@@ -86,7 +43,12 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'mvn test -Dselenide.headless=true -Dselenide.browser=chrome'
+                sh '''
+                    mvn test \
+                        -Dselenide.browser=chrome \
+                        -Dselenide.headless=true \
+                        -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver
+                '''
             }
             post {
                 always {
