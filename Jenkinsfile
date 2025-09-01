@@ -34,9 +34,9 @@ pipeline {
                         CHROME_MAJOR=$(echo $CHROME_VERSION | cut -d'.' -f1)
                         echo "Chrome: $CHROME_VERSION, Major: $CHROME_MAJOR"
 
-                        # Установка ChromeDriver
-                        echo "Downloading ChromeDriver for major version $CHROME_MAJOR"
-                        wget -q -O /tmp/chromedriver_version "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR"
+                        # Установка ChromeDriver - ИСПРАВЛЕННАЯ ЧАСТЬ
+                        echo "Downloading ChromeDriver for Chrome version $CHROME_VERSION"
+                        wget -q -O /tmp/chromedriver_version "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION"
                         CHROMEDRIVER_VERSION=$(cat /tmp/chromedriver_version)
                         echo "ChromeDriver version: $CHROMEDRIVER_VERSION"
 
