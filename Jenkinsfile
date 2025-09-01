@@ -46,8 +46,7 @@ pipeline {
                 sh '''
                     mvn test \
                         -Dselenide.browser=chrome \
-                        -Dselenide.headless=true \
-                        -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver
+                        -Dselenide.headless=true
                 '''
             }
             post {
