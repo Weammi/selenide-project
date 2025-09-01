@@ -14,8 +14,11 @@ class GoogleSearchTest {
     void prepare() {
         // Явно указываем путь к ChromeDriver
         Configuration.browser = "chrome";
-        Configuration.browserVersion = "120.0";
+        Configuration.browserVersion = "138.0";
         Configuration.headless = true;
+        Configuration.pageLoadTimeout = 20000;
+        Configuration.remoteReadTimeout = 20000;
+        Configuration.remoteConnectionTimeout = 20000;
     }
 
     @Test
