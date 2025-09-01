@@ -10,13 +10,13 @@ import static com.codeborne.selenide.Selenide.open;
 
 class GoogleSearchTest {
 
-//    @BeforeEach
-//    void prepare() {
-//        // Явно указываем путь к ChromeDriver
-//        System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
-//        Configuration.browser = "chrome";
-//        Configuration.headless = true;
-//    }
+    @BeforeEach
+    void prepare() {
+        // Явно указываем путь к ChromeDriver
+        Configuration.browser = "chrome";
+        Configuration.browserVersion = "120.0";
+        Configuration.headless = true;
+    }
 
     @Test
     void testGoogleSearch() {

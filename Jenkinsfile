@@ -1,15 +1,9 @@
 pipeline {
     agent {
         docker {
-            image 'selenoid/chrome:120.0'  # Стабильная версия
-            args '--shm-size=2g -u root'
-            reuseNode true
+            image 'maven:3.9.8-eclipse-temurin-21'  // Maven + Java
+            args '-u root --shm-size=1g'  // Запуск от root
         }
-    }
-
-    environment {
-        BROWSER = 'chrome'
-        SELENIDE_HEADLESS = 'true'
     }
 
     stages {
@@ -45,9 +39,7 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                    mvn test \
-                        -Dselenide.browser=chrome \
-                        -Dselenide.headless=true
+                    mvn test
                 '''
             }
             post {
