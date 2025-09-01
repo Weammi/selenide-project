@@ -1,8 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'selenoid/chrome:latest'  // Официальный образ Selenoid
-            args '--shm-size=1g -u root'  // Запуск от root
+            image 'maven:3.9.8-eclipse-temurin-21'  // Maven + Java
+            args '-u root --shm-size=1g'  // Запуск от root
         }
     }
 
@@ -12,13 +12,21 @@ pipeline {
     }
 
     stages {
-            stage('Setup Maven') {
+            stage('Install Chrome') {
                 steps {
                     sh '''
-                        # Устанавливаем Maven
+                        # Установка Chrome
                         apt-get update
-                        apt-get install -y maven
-                        mvn --version
+                        apt-get install -y wget
+                        wget -q -O /tmp/chrome.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+                        apt-get install -y /tmp/chrome.deb
+                        rm /tmp/chrome.deb
+
+                        # Установка ChromeDriver
+                        CHROME_VERSION=$(google-chrome-stable --version | awk '{print $3}')
+                        wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROME_VERSION/chromedriver_linux64.zip"
+                        unzip /tmp/chromedriver.zip -d /usr/local/bin/
+                        chmod +x /usr/local/bin/chromedriver
                     '''
                 }
             }
