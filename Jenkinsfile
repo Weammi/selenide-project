@@ -1,8 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'maven:3.9.8-eclipse-temurin-21'
-            args '-u root -v /tmp/m2:/root/.m2'
+            image 'justinribeiro/chrome-headless:latest'  // Готовый образ с Chrome
+            args '--shm-size=1g'  // Важно для Chrome
         }
     }
 
@@ -12,21 +12,12 @@ pipeline {
     }
 
     stages {
-            stage('Install Chrome') {
+            stage('Setup Maven') {
                 steps {
                     sh '''
-                        # Установка зависимостей для Chrome
+                        # Устанавливаем Maven
                         apt-get update
-                        apt-get install -y wget gnupg libgbm-dev libnss3-dev libxss1 libasound2 libxtst6
-
-                        # Установка Chrome
-                        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg
-                        echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
-                        apt-get update
-                        apt-get install -y google-chrome-stable
-
-                        # Проверяем установку
-                        google-chrome-stable --version
+                        apt-get install -y maven
                     '''
                 }
             }
