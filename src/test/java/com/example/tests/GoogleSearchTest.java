@@ -2,6 +2,7 @@ package com.example.tests;
 
 import com.codeborne.selenide.Configuration;
 import com.example.page.GooglePage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static com.codeborne.selenide.Condition.text;
@@ -9,13 +10,16 @@ import static com.codeborne.selenide.Selenide.open;
 
 class GoogleSearchTest {
 
-    @Test
-    void testGoogleSearch() {
+    @BeforeEach
+    void prepare() {
         // Явно указываем путь к ChromeDriver
         System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
         Configuration.browser = "chrome";
         Configuration.headless = true;
+    }
 
+    @Test
+    void testGoogleSearch() {
         GooglePage googlePage = new GooglePage();
 
         open("https://google.com");
