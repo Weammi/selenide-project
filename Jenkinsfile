@@ -1,12 +1,24 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.9.8-eclipse-temurin-21'  // Maven + Java
-            args '-u root --shm-size=1g'  // Запуск от root
-        }
-    }
+    agent any  // Запускает на самой ноде (вашей VM)
 
     stages {
+        stage('Setup Chrome') {
+            steps {
+                sh '''
+                    # Установка Chrome на виртуальную машину
+                    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+                    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+                    sudo apt-get update
+                    sudo apt-get install -y google-chrome-stable
+                '''
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
         stage('Checkout') {
             steps {
@@ -32,7 +44,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean compile'
+                sh 'mvn test -Dselenide.headless=true'
             }
         }
 
