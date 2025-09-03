@@ -5,18 +5,19 @@ pipeline {
         stage('Setup Chrome') {
             steps {
                 sh '''
-                    # Установка Chrome на виртуальную машину
+                    echo "=== Installing Chrome ==="
+                    # Добавление репозитория Google Chrome
                     wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
                     echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+
+                    # Установка Chrome и зависимостей
                     sudo apt-get update
                     sudo apt-get install -y google-chrome-stable
-                '''
-            }
-        }
 
-        stage('Checkout') {
-            steps {
-                checkout scm
+                    # Проверка установки
+                    echo "Chrome version:"
+                    google-chrome-stable --version
+                '''
             }
         }
 
@@ -38,20 +39,17 @@ pipeline {
                     mvn --version
                     echo "Java version:"
                     java --version
+                    echo "Chrome version:"
+                    google-chrome-stable --version
                 '''
             }
         }
 
-        stage('Build') {
-            steps {
-                sh 'mvn test -Dselenide.headless=true'
-            }
-        }
-
-        stage('Test') {
+        stage('Build and Test') {
             steps {
                 sh '''
-                    mvn test
+                    # Компиляция и запуск тестов в одном этапе
+                    mvn clean test -Dselenide.headless=true
                 '''
             }
             post {
