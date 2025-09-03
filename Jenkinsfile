@@ -6,7 +6,7 @@ pipeline {
         // 'jdk21' - это произвольное имя, которое вы дали при настройке JDK в Jenkins
         jdk 'jdk21'
         // Также убедитесь, что Maven настроен корректно
-        maven 'maven'
+        maven 'maven:3.9.8'
     }
 
     stages {
