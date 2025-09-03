@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    // ОБЯЗАТЕЛЬНО добавляем эту секцию!
+    tools {
+        // 'jdk21' - это произвольное имя, которое вы дали при настройке JDK в Jenkins
+        jdk 'jdk21'
+        // Также убедитесь, что Maven настроен корректно
+        maven 'maven'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -17,7 +25,7 @@ pipeline {
                     echo "Files in workspace:"
                     ls -la
                     echo "Maven version:"
-                    mvn --version
+                    mvn --version // Теперь здесь будет версия от нужного JDK!
                     echo "Java version:"
                     java --version
                     echo "Chrome version:"
